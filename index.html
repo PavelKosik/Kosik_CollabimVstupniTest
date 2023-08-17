@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Vstupní test Collabim Pavel Kosík</title>
+		<script>
+			var downloadableText = "";
+			async function Submit() {
+				var textToFind = document.querySelector("input[type=text]").value;
+				var response = await fetch(
+					"https://customsearch.googleapis.com/customsearch/v1?exactTerms=" +
+						textToFind +
+						"&key=AIzaSyBWUC57eV3W0cTIkIJ3AbRMD1hhgXQ8Hs4&cx=a040bbc63fe4247de&num=10"
+				);
+
+				if (response.ok) {
+					let json = await response.json();
+					for (let i = 0; i < json.items.length; i++) {
+						downloadableText +=
+							"Název: " +
+							json.items[i].title +
+							"\nURL: " +
+							json.items[i].formattedUrl +
+							"\nPopis: " +
+							json.items[i].snippet +
+							"\n\n";
+					}
+				}
+			}
+
+			function saveDataToFile() {
+				if (downloadableText.length > 0) {
+					const link = document.createElement("a");
+					const file = new Blob([downloadableText], {type: "text/plain"});
+					link.href = URL.createObjectURL(file);
+					link.download = "data.txt";
+					link.click();
+					URL.revokeObjectURL(link.href);
+				} else {
+					console.log("Žádná data k uložení");
+				}
+			}
+		</script>
+	</head>
+	<body>
+		<form>
+			<input type="text" />
+			<input type="button" value="vyhledat" onclick="Submit()" />
+		</form>
+		<button type="button" onclick="saveDataToFile();">
+			Klikni pro uložení do souboru
+		</button>
+	</body>
+</html>
